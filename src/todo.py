@@ -3,6 +3,7 @@
 用法：
     python src/todo.py list
     python src/todo.py add <任务标题>
+    python src/todo.py done <序号>
 """
 
 from __future__ import annotations
@@ -70,7 +71,6 @@ def main(argv: list[str] | None = None) -> int:
         print(f"已添加：{argv[1]}")
         return 0
 
-
     if argv[0] == "done":
         if len(argv) != 2:
             print("用法：python src/todo.py done <序号>")
@@ -82,14 +82,31 @@ def main(argv: list[str] | None = None) -> int:
             print("错误：序号必须是整数")
             return 2
 
-        if not done_task(tasks, number):
-            print("错误：任务序号不存在")
+        # 空列表需要单独提示
+        if not tasks:
+            print("错误：当前还没有任何待办，请先用 add 添加")
             return 2
 
-        save_tasks(tasks)
-        print(f"已完成第 {number} 条任务")
-        return 0
+        # 检查任务序号是否有效
+        if not 1 <= number <= len(tasks):
+            print(
+                f"错误：序号超出范围，当前共 {len(tasks)} 条"
+                f"（可选 1~{len(tasks)}）"
+            )
+            return 2
 
+        # 如果已经完成，不需要重复保存
+        if tasks[number - 1]["done"]:
+            print(f"提示：第 {number} 条任务本来就是已完成状态")
+            return 0
+
+        done_task(tasks, number)
+        save_tasks(tasks)
+        print(
+            f"已完成第 {number} 条任务: "
+            f"{tasks[number - 1]['title']}"
+        )
+        return 0
 
     print(f"未知命令：{argv[0]}")
     return 2
