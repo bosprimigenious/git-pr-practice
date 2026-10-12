@@ -32,5 +32,18 @@ class TodoTest(unittest.TestCase):
             self.assertEqual(todo.load_tasks(path), [{"title": "中文标题", "done": False}])
 
 
+    def test_done_task_marks_correct_item(self):
+        tasks = [
+            {"title": "任务A", "done": False},
+            {"title": "任务B", "done": False},
+        ]
+
+        result = todo.done_task(tasks, 1)
+
+        self.assertTrue(result)
+        self.assertTrue(tasks[0]["done"])
+        self.assertFalse(tasks[1]["done"])
+
+
 if __name__ == "__main__":
     unittest.main()
