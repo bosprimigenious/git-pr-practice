@@ -9,15 +9,65 @@
 | --- | --- |
 | `python src/todo.py list` | 列出全部待办（默认命令） |
 | `python src/todo.py add <标题>` | 添加一条待办 |
+| `python src/todo.py done <序号>` | 将指定序号的待办标记为已完成 |
 
 任务数据保存在当前目录的 `tasks.json`（UTF-8，不转义中文）。
 
+
 ## 使用示例
+
+添加待办任务：
 
 ```bash
 python src/todo.py add "写程序设计实践实验报告"
+python src/todo.py add "复习离散数学"
+```
+
+查看任务：
+
+```bash
 python src/todo.py list
 ```
+
+输出：
+
+```text
+1. [ ] 写程序设计实践实验报告
+2. [ ] 复习离散数学
+```
+
+将第一条任务标记为已完成：
+
+```bash
+python src/todo.py done 1
+```
+
+输出：
+
+```text
+已完成第 1 条任务：写程序设计实践实验报告
+```
+
+再次查看：
+
+```bash
+python src/todo.py list
+```
+
+输出：
+
+```text
+1. [x] 写程序设计实践实验报告
+2. [ ] 复习离散数学
+```
+
+注意：
+- 序号从 1 开始。
+- 如果任务列表为空，会提示先添加任务。
+- 如果序号超出范围，程序会提示合法范围。
+- 如果任务已经完成，再次执行 done 不会重复修改。
+- 缺少参数或输入无效序号时，程序会返回错误退出码 2。
+
 
 输出：
 

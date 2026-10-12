@@ -3,6 +3,7 @@
 用法：
     python src/todo.py list
     python src/todo.py add <任务标题>
+    python src/todo.py done <序号>
 """
 
 from __future__ import annotations
@@ -33,6 +34,15 @@ def add_task(tasks: list[dict], title: str) -> list[dict]:
     return tasks
 
 
+def done_task(tasks: list[dict], number: int) -> bool:
+    """按从 1 开始的序号，将任务标记为已完成。"""
+    if number < 1 or number > len(tasks):
+        return False
+
+    tasks[number - 1]["done"] = True
+    return True
+
+
 def list_tasks(tasks: list[dict]) -> str:
     """把任务列表渲染成人类可读的多行文本，序号从 1 开始。"""
     if not tasks:
@@ -59,6 +69,43 @@ def main(argv: list[str] | None = None) -> int:
         add_task(tasks, argv[1])
         save_tasks(tasks)
         print(f"已添加：{argv[1]}")
+        return 0
+
+    if argv[0] == "done":
+        if len(argv) != 2:
+            print("用法：python src/todo.py done <序号>")
+            return 2
+
+        try:
+            number = int(argv[1])
+        except ValueError:
+            print("错误：序号必须是整数")
+            return 2
+
+        # 空列表需要单独提示
+        if not tasks:
+            print("错误：当前还没有任何待办，请先用 add 添加")
+            return 2
+
+        # 检查任务序号是否有效
+        if not 1 <= number <= len(tasks):
+            print(
+                f"错误：序号超出范围，当前共 {len(tasks)} 条"
+                f"（可选 1~{len(tasks)}）"
+            )
+            return 2
+
+        # 如果已经完成，不需要重复保存
+        if tasks[number - 1]["done"]:
+            print(f"提示：第 {number} 条任务本来就是已完成状态")
+            return 0
+
+        done_task(tasks, number)
+        save_tasks(tasks)
+        print(
+            f"已完成第 {number} 条任务: "
+            f"{tasks[number - 1]['title']}"
+        )
         return 0
 
     print(f"未知命令：{argv[0]}")
